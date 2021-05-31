@@ -37,8 +37,7 @@ To develop this discord bot locally, follow the instructions:
 3. It will contain these three environment variables:
 
    - **DISCORDJS_BOT_TOKEN** - Your Bot Token
-   - **WEBHOOK_ID** - For webhooks, not required unless you want to use the webhook command
-   - **WEBHOOK_TOKEN** - The token for your webhook client
+   - **YOUTUBE_DATA_API_KEY** - YouTube data API key obtained from [here](https://developers.google.com/youtube/v3/quickstart/nodejs#step_1_turn_on_the)
 
 4. Run `npm run start` or `npm run dev` in the project directory
 
