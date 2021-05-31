@@ -9,15 +9,15 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/iShubhamPrakash/dabble-discord-bot.git"
+		"url": "git+https://github.com/dabblelab/dabblelab-youtube-discord-bot.git"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/iShubhamPrakash/dabble-discord-bot/issues"
+		"url": "https://github.com/dabblelab/dabblelab-youtube-discord-bot.git/issues"
 	},
-	"homepage": "https://github.com/iShubhamPrakash/dabble-discord-bot#readme",
+	"homepage": "https://github.com/dabblelab/dabblelab-youtube-discord-bot.git#readme",
 	"dependencies": {
 		"axios": "^0.21.1",
 		"discord.js": "^12.5.3",
