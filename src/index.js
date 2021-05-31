@@ -1,11 +1,16 @@
 require("dotenv").config();
-const { default: axios } = require("axios");
-var validUrl = require("valid-url");
-
 const { Client } = require("discord.js");
+const { getVideos } = require("./youtube");
+const {
+	PREFIX,
+	GREETING_TEXTS,
+	HELP_RESPONSE,
+	WRONG_QUERY_RESPONSE,
+	NO_RESULT_RESPONSE,
+} = require("./constants/botConstatnts");
+const { getYouTubeLink } = require("./utils/youtube");
 
 const client = new Client();
-const PREFIX = "$";
 
 client.on("ready", () => {
 	console.log(`${client.user.tag} has logged in`);
@@ -14,13 +19,9 @@ client.on("ready", () => {
 client.on("message", async (message) => {
 	if (message.author.bot) return;
 
-	console.log(`[${message.author.username}]: ${message.content}`);
+	// console.log(`[${message.author.username}]: ${message.content}`);
 
-	if (
-		["hello", "test", "hi", "help", "hello!", `hii`].includes(
-			message.content.toLowerCase().trim()
-		)
-	) {
+	if (GREETING_TEXTS.includes(message.content.toLowerCase().trim())) {
 		message.channel.send(
 			`Welcome  ${message.author.username} 🙂, Type **$help** to get a list of commands for the Dabble Bot`
 		);
@@ -32,21 +33,29 @@ client.on("message", async (message) => {
 			.substring(PREFIX.length)
 			.split(/\s+/);
 
-		console.log(CMD_NAME);
-
 		switch (CMD_NAME) {
 			case "help":
-				message.channel
-					.send(`Just enter a command with a **$** prefix and get the result.
-**Following commannds are supported:**
-**$help**: List of all commands
-**$searchYT [a search query e.g how to build a discord bot]**: Returns a list of youtube videos related to the query,
-`);
+				message.channel.send(HELP_RESPONSE);
 				break;
 
 			case "searchYT":
 				try {
-					message.channel.send("Your command is received");
+					if (args.length === 0) {
+						return message.channel.send(WRONG_QUERY_RESPONSE);
+					}
+
+					const searchQuery = args.join(" ");
+					const searchResult = await getVideos(searchQuery);
+
+					if (searchResult.length === 0) {
+						return message.channel.send(NO_RESULT_RESPONSE);
+					}
+
+					// Creating response message
+					const responseText = searchResult
+						.map((video) => getYouTubeLink(video.id.videoId))
+						.join("\n");
+					message.channel.send(responseText);
 				} catch (e) {
 					console.log(e);
 					message.channel.send(
@@ -56,10 +65,7 @@ client.on("message", async (message) => {
 				break;
 
 			default:
-				message.channel.send(`**Following commannds are supported:**
-**$help**: List of all commands
-**$searchYT [a search query e.g how to build a discord bot]**: Returns a list of youtube videos related to the query,
-`);
+				message.channel.send(HELP_RESPONSE);
 		}
 	}
 });
