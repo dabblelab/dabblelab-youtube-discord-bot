@@ -6,6 +6,7 @@ const API_SEARCH_URL = "/search";
 const KEY = process.env.YOUTUBE_DATA_API_KEY;
 const CHANNEL_ID = process.env.DABBLELAB_CHANNEL_ID;
 const PART = "snippet";
+const RESULT_LIMIT = 3;
 
 const getVideos = async (query) => {
 	const requestConfig = {
@@ -16,6 +17,7 @@ const getVideos = async (query) => {
 			channelId: CHANNEL_ID,
 			key: KEY,
 			type: "video",
+			maxResults: RESULT_LIMIT,
 			q: query,
 		},
 	};
