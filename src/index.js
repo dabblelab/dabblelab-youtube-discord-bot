@@ -1,72 +1,57 @@
 require("dotenv").config();
-const { Client } = require("discord.js");
-const { getVideos } = require("./youtube");
-const {
-	PREFIX,
-	GREETING_TEXTS,
-	HELP_RESPONSE,
-	WRONG_QUERY_RESPONSE,
-	NO_RESULT_RESPONSE,
-} = require("./constants/botConstatnts");
-const { getYouTubeLink } = require("./utils/youtube");
+const fs = require("fs");
+const Discord = require("discord.js");
+const { PREFIX } = require("./constants/botConstatnts");
 
-const client = new Client();
+const client = new Discord.Client();
+client.commands = new Discord.Collection();
+
+const commandFiles = fs
+	.readdirSync(__dirname + "/commands")
+	.filter((file) => file.endsWith(".js"));
+
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+	// set a new item in the Collection
+	// with the key as the command name and the value as the exported module
+	client.commands.set(command.name, command);
+}
 
 client.on("ready", () => {
 	console.log(`${client.user.tag} has logged in`);
 });
 
 client.on("message", async (message) => {
-	if (message.author.bot) return;
+	if (!message.content.startsWith(PREFIX) || message.author.bot) return;
 
-	// console.log(`[${message.author.username}]: ${message.content}`);
+	const args = message.content.slice(PREFIX.length).trim().split(/ +/);
+	const commandName = args.shift().toLowerCase();
 
-	if (GREETING_TEXTS.includes(message.content.toLowerCase().trim())) {
-		message.channel.send(
-			`Welcome  ${message.author.username} 🙂, Type **$help** to get a list of commands for the Dabble Bot`
-		);
+	if (!client.commands.has(commandName)) return;
+
+	const command = client.commands.get(commandName);
+
+	if (command.args && !args.length) {
+		let reply = `You didn't provide any arguments, ${message.author}!`;
+
+		if (command.usage) {
+			reply += `\nThe proper usage would be: \`${PREFIX}${command.name} ${command.usage}\``;
+		}
+
+		return message.channel.send(reply);
 	}
 
-	if (message.content.startsWith(PREFIX)) {
-		const [CMD_NAME, ...args] = message.content
-			.trim()
-			.substring(PREFIX.length)
-			.split(/\s+/);
+	if (command.guildOnly && message.channel.type === "dm") {
+		return message.reply("I can't execute that command inside DMs!");
+	}
 
-		switch (CMD_NAME) {
-			case "help":
-				message.channel.send(HELP_RESPONSE);
-				break;
-
-			case "searchYT":
-				try {
-					if (args.length === 0) {
-						return message.channel.send(WRONG_QUERY_RESPONSE);
-					}
-
-					const searchQuery = args.join(" ");
-					const searchResult = await getVideos(searchQuery);
-
-					if (searchResult.length === 0) {
-						return message.channel.send(NO_RESULT_RESPONSE);
-					}
-
-					// Creating response message
-					const responseText = searchResult
-						.map((video) => getYouTubeLink(video.id.videoId))
-						.join("\n");
-					message.channel.send(responseText);
-				} catch (e) {
-					console.log(e);
-					message.channel.send(
-						"⚠️ Error: Please check if you have entered a valid command"
-					);
-				}
-				break;
-
-			default:
-				message.channel.send(HELP_RESPONSE);
-		}
+	try {
+		console.log("command execution begin");
+		command.execute(message, args);
+		console.log("command executed");
+	} catch (error) {
+		console.error(error);
+		message.reply("there was an error trying to execute that command!");
 	}
 });
 
