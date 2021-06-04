@@ -46,9 +46,7 @@ client.on("message", async (message) => {
 	}
 
 	try {
-		console.log("command execution begin");
 		command.execute(message, args);
-		console.log("command executed");
 	} catch (error) {
 		console.error(error);
 		message.reply("there was an error trying to execute that command!");

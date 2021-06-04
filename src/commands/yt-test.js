@@ -33,7 +33,7 @@ const getVideos = async (query) => {
 };
 
 module.exports = {
-	name: "yt",
+	name: "yt-test",
 	description: "Search videos from dabbleLab's youtube channel!",
 	args: true,
 	usage: "<search term e.g Discord Bot Tutorial>",
@@ -43,8 +43,6 @@ module.exports = {
 		try {
 			const searchQuery = args.join(" ");
 			const searchResult = await getVideos(searchQuery);
-
-			console.log("searchResult", searchResult);
 
 			if (searchResult.length === 0) {
 				return message.channel.send(NO_RESULT_RESPONSE);

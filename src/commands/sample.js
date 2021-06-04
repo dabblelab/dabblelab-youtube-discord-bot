@@ -1,6 +1,6 @@
 module.exports = {
-	name: "test",
-	description: "test if the code is working or not!",
+	name: "sample",
+	description: "sample command setup",
 	args: true,
 	usage: "<any text>",
 	guildOnly: false,
