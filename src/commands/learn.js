@@ -29,11 +29,12 @@ const createCourseListEmbed = function (courses) {
 	return courseListEmbed
 }
 
-const createLessonsListEmbed = function (lessons) {
+const createLessonsListEmbed = function (lessons, courseNumber) {
 	const lessonsListEmbed = new Discord.MessageEmbed()
 		.setColor("GOLD")
-		.setTitle("Here are the lessons in this course:")
+		.setTitle(`📚 Here are the lessons in course #${courseNumber}:`)
 		.setURL("https://learn.dabblelab.com/ ")
+		.setFooter("Click on the individual lesson to open! ")
 		.setThumbnail(DABBLELAB_LOGO_NEW);
 
 	lessons.forEach((lesson, index) => {
@@ -89,8 +90,7 @@ e.g \`//${this.name} 2\``);
 			const lessons = await fetchLessons(courseId);
 			console.log("lessons", lessons)
 			if (!lessons.length) return message.channel.send(`Sorry 😕, no lessons are available for this course. Please make sure you entered a correct course number or check later!!`);
-			message.channel.send(createLessonsListEmbed(lessons))
-			message.channel.send(`Hi, here is a list of chapter in #${courseId}:`);
+			message.channel.send(createLessonsListEmbed(lessons, courseId))
 		}
 	},
 };
