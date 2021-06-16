@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const { fetchCourses } = require("../utils/airtable");
+const { fetchCourses, fetchLessons } = require("../utils/airtable");
 
 const { DABBLELAB_LOGO_NEW } = require("../constants/botConstatnts");
 
@@ -7,11 +7,11 @@ const description = `**Courses for getting started with artificial intelligence 
 
 Each course contains a collection of dabbles (mini-courses) that we're constantly adding to. Dabbles include easy-to-follow videos instructions and hands-on projects (labs) for learning and building faster.
 
-📌 [Check our all of our tutorials](https://learn.dabblelab.com/ 'visit our tutorial website')
+📌 [Check out all of our tutorials here](https://learn.dabblelab.com/ 'visit our tutorial website')
 
 📌 [Visit our website for more Information about us](https://dabblelab.com/ 'visit our official website')
 
-**Check out some of our latest course:**
+📚 **Check out some of our latest course:**
 `;
 
 
@@ -24,9 +24,22 @@ const createCourseListEmbed = function (courses) {
 		.setThumbnail(DABBLELAB_LOGO_NEW);
 
 	courses.forEach((course) => {
-		courseEmbed.addField(`${course.number}) ${course.name}`, `${course.description}`);
+		courseListEmbed.addField(`${course.number}.  ${course.name}`, `${course.description}`);
 	})
 	return courseListEmbed
+}
+
+const createLessonsListEmbed = function (lessons) {
+	const lessonsListEmbed = new Discord.MessageEmbed()
+		.setColor("GOLD")
+		.setTitle("Here are the lessons in this course:")
+		.setURL("https://learn.dabblelab.com/ ")
+		.setThumbnail(DABBLELAB_LOGO_NEW);
+
+	lessons.forEach((lesson, index) => {
+		lessonsListEmbed.addField(`${index + 1}.  ${lesson.fields.title}`, `${lesson.id}`);
+	})
+	return lessonsListEmbed
 }
 
 
@@ -68,11 +81,15 @@ module.exports = {
 				description: record.fields.description,
 				last_updated: record.fields.last_updated
 			}));
-			console.log(courses)
 			message.channel.send(createCourseListEmbed(courses))
-			message.channel.send('For more details on a specific course use the command with the course number. \ne.g `//learn 2`')
+			message.channel.send(`For more details on a specific course use the command with the course number.
+e.g \`//${this.name} 2\``);
 		} else {
 			// Send a list of chapters from a given course with index courseId
+			const lessons = await fetchLessons(courseId);
+			console.log("lessons", lessons)
+			if (!lessons.length) return message.channel.send(`Sorry 😕, no lessons are available for this course. Please make sure you entered a correct course number or check later!!`);
+			message.channel.send(createLessonsListEmbed(lessons))
 			message.channel.send(`Hi, here is a list of chapter in #${courseId}:`);
 		}
 	},

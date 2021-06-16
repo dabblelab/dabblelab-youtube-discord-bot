@@ -30,12 +30,12 @@ module.exports = {
 			.setThumbnail(DABBLELAB_LOGO_NEW)
 			.addFields(
 				{
-					name: "1. Search videos from DabbleLab's YouTube channel",
-					value: "`//yt <your search query here>`",
+					name: "1. Get a list of courses from DabbleLab",
+					value: "`//learn` or `//learn <course number>`",
 				},
 				{
-					name: "2. Search videos from DabbleLab's courses",
-					value: "`//learn <your search query here>`",
+					name: "2. Search videos directly from DabbleLab's YouTube channel",
+					value: "`//yt <your search query here>`",
 				},
 				{
 					name: "3. Get Help",
